@@ -18,10 +18,16 @@ func newWorker(id uint) *worker {
 }
 
 func (w *worker) Run(wg *sync.WaitGroup, taskCh chan tasks.Task) {
-	defer wg.Done()
+	log.Printf("[Worker #%02d] Started", w.id)
+
+	defer func() {
+		wg.Done()
+		log.Printf("[Worker #%02d] Done", w.id)
+	}()
+
 	for task := range taskCh {
-		log.Printf("[Worker #%2d] Starting task", w.id)
+		log.Printf("[Worker #%02d] Starting task", w.id)
 		task.Run()
-		log.Printf("[Worker #%2d] Task done", w.id)
+		log.Printf("[Worker #%02d] Task done", w.id)
 	}
 }
