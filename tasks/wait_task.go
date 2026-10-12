@@ -1,6 +1,7 @@
 package tasks
 
 import (
+	"context"
 	"log"
 	"time"
 	"uuid"
@@ -18,8 +19,18 @@ func NewWaitTask(time time.Duration) WaitTask {
 	}
 }
 
-func (t WaitTask) Run() {
+func (t WaitTask) Run(ctx context.Context) error {
 	log.Printf("[Task %s] Starting...\n", t.ID)
-	time.Sleep(t.Duration)
-	log.Printf("[Task %s] Done after %s\n", t.ID, t.Duration)
+
+	timer := time.NewTimer(t.Duration)
+	defer timer.Stop()
+
+	select {
+	case <-timer.C:
+		log.Printf("[Task %s] Done after %s\n", t.ID, t.Duration)
+		return nil
+	case <-ctx.Done():
+		log.Printf("[Task %s] Cancelled: %v\n", t.ID, ctx.Err())
+		return ctx.Err()
+	}
 }

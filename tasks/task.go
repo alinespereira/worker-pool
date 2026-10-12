@@ -1,5 +1,7 @@
 package tasks
 
+import "context"
+
 type Task interface {
-	Run()
+	Run(ctx context.Context) error
 }
