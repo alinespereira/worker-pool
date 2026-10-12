@@ -35,7 +35,7 @@ func (wp *WorkerPool) Submit(task tasks.Task) {
 func (wp *WorkerPool) Run() {
 	for _, worker := range wp.workers {
 		wp.wg.Add(1)
-		worker.Run(wp.wg, wp.taskCh)
+		go worker.Run(wp.wg, wp.taskCh)
 	}
 }
 
